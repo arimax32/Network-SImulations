@@ -61,10 +61,21 @@ def createDataPackets(data) :
 
 def receive_message(client_socket):
     client_socket.settimeout(TIMER)
-	try:
-	    print("f")
-	except:
-	    print("g")
+    try:
+        msg_header = client_socket.recv(HEADERSIZE)
+
+        if not len(msg_header):
+            return False
+
+        msg_len = int(msg_header.decode('utf-8').strip())
+
+        data = client_socket.recv(msg_len).decode('utf-8')
+        client_socket.settimeout(None)
+        return data,False
+
+    except:
+    	client_socket.settimeout(None)
+    	return False,True
 
 data = input("Enter the data to be sent : ")
 frames,last_packet = createDataPackets(data)
